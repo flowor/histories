@@ -110,12 +110,8 @@
 
     function runParallel(program) {
         memory.init();
-        program.forEach(runAtomic);
+        program.forEach(action => action());
         memory.print();
-
-        function runAtomic(funcArr) {
-            funcArr.forEach(action => action());
-        }
     }
 
     document.write('A1 -> A2 -> B1 -> B2 ----> ')
@@ -135,6 +131,10 @@
 
     document.write('B1 -> A1 -> A2 -> B2 ----> ')
     run([B1, A1, A2, B2]);
+
+    document.write('A1[0], A1[1], A1[2], A2[0], A2[1], A2[2],  B1[0], B1[1], B1[2], B2[0], B2[1], B2[2], B2[3] ----> ')
+    runParallel([A1[0], A1[1], A1[2], A2[0], A2[1], A2[2],  B1[0], B1[1], B1[2], B2[0], B2[1], B2[2], B2[3]]);
+    
 
 
 })();
