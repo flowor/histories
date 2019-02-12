@@ -93,17 +93,6 @@
 
     // ------- DEFINE EXECUTION SEQUENCE -------
 
-    // Program is an array of atomic actions
-    let p1 = [ A[0], A[1], A[2], A[3], A[4], A[5], B[0], B[1], B[2], B[3], B[4], B[5], B[6] ];
-    let p2 = [ A[0], A[1], A[2], B[0], B[1], B[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ];
-    let p3 = [ B[0], B[1], B[2], B[3], B[4], B[5], B[6], A[0], A[1], A[2], A[3], A[4], A[5] ];
-
-    let p4 = [ A[0], B[0], B[1], B[2], A[1], A[2], A[3], A[4], A[5], B[3], B[4], B[5], B[6] ];
-    let p5 = [ A[0], B[0], A[1], A[2], B[1], B[2], A[3], A[4], A[5], B[3], B[4], B[5], B[6] ];
-    let p6 = [ A[0], B[0], A[1], A[2], B[1], B[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ];
-    let p7 = [ A[0], B[0], B[1], B[2], A[1], A[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ];
-
-
     function run(actions) {
         memory.init();
         runAtomic(actions);
@@ -120,13 +109,20 @@
         document.write('->')
     }
 
-    run(p1);
-    run(p2);
-    run(p3);
-    run(p4);
-    run(p5);
-    run(p6);
-    run(p7);
 
+        // Program is an array of atomic actions
+        let programs = [
+            [ A[0], A[1], A[2], A[3], A[4], A[5], B[0], B[1], B[2], B[3], B[4], B[5], B[6] ],
+            [ A[0], A[1], A[2], B[0], B[1], B[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ],
+            [ B[0], B[1], B[2], B[3], B[4], B[5], B[6], A[0], A[1], A[2], A[3], A[4], A[5] ],
+            [ A[0], B[0], B[1], B[2], A[1], A[2], A[3], A[4], A[5], B[3], B[4], B[5], B[6] ], 
+            [ A[0], B[0], A[1], A[2], B[1], B[2], A[3], A[4], A[5], B[3], B[4], B[5], B[6] ], 
+            [ A[0], B[0], A[1], A[2], B[1], B[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ], 
+            [ A[0], B[0], B[1], B[2], A[1], A[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ]
+        ];
+
+
+        // ------- RUN PROGRAMS -------
+        programs.forEach(run);
 
 })();
