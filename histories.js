@@ -62,79 +62,71 @@
     }
 
     
-    // ------- DEFINE PROGRAM -------
-
-    // x=x+1;     
-    let A1 = [
-        function() { load(memory.x, registers.r1) },   // Load x from memory into register 1
-        function() { alui('+', 1, registers.r1)  },    // ADD 1 to register r1's value and set it to r1
-        function() { store(registers.r1, memory.x) },  // Store r1 into x
-    ];
-
-
-    // x=x+2;
-    let A2 = [
-        function() { load(memory.x, registers.r1) },   // Load x from memory into register 1
-        function() { alui('+', 2, registers.r1)  },    // ADD 2 to register r1's value and set it to r1
-        function() { store(registers.r1, memory.x) },  // Store r1 into x
-    ];
-
-
-    // x=x+2;
-    let B1 = [
-        function() { load(memory.x, registers.r2) },  // Load x from memory into register 2
-        function() { alui('+', 2, registers.r2) },    // ADD 2 to register r1's value and set it to r2
-        function() { store(registers.r2, memory.x) }, // Store r2 into x
-    ];
+    // ------- DEFINE STATEMENTS -------
+    // A statement is an array of atomic actions
     
-    // y=y-x;
-    let B2 = [
-        function() { load(memory.y, registers.r2) },          // Load y from memory into register 2
-        function() { load(memory.x, registers.r3) },          // Load x from memory into register 3
-        function() { alu('-', registers.r2, registers.r3) },  // SUBTRACT r3(x) from r2(y) and set it to r3
-        function() { store(registers.r3, memory.y) },         // Store r3 into y
+    let A = [
+        // x=x+1;
+        {name: 'A1', execute: function() { load(memory.x, registers.r1) }},   // Load x from memory into register 1
+        {name: 'A2', execute: function() { alui('+', 1, registers.r1)  }},    // ADD 1 to register r1's value and set it to r1
+        {name: 'A3', execute: function() { store(registers.r1, memory.x) }},  // Store r1 into x
+        
+        // x=x+2; 
+        {name: 'A4', execute: function() { load(memory.x, registers.r1) }},   // Load x from memory into register 1
+        {name: 'A5', execute: function() { alui('+', 2, registers.r1)  }},    // ADD 2 to register r1's value and set it to r1
+        {name: 'A6', execute: function() { store(registers.r1, memory.x) }},  // Store r1 into x
+    ];
+
+    let B = [
+        // x=x+2;
+        {name: 'B1', execute: function() { load(memory.x, registers.r2) }},  // Load x from memory into register 2
+        {name: 'B2', execute: function() { alui('+', 2, registers.r2) }},    // ADD 2 to register r1's value and set it to r2
+        {name: 'B3', execute: function() { store(registers.r2, memory.x) }}, // Store r2 into x
+
+        // y=y-x;
+        {name: 'B4', execute: function() { load(memory.y, registers.r2) }},          // Load y from memory into register 2
+        {name: 'B5', execute: function() { load(memory.x, registers.r3) }},          // Load x from memory into register 3
+        {name: 'B6', execute: function() { alu('-', registers.r2, registers.r3) }},  // SUBTRACT r3(x) from r2(y) and set it to r3
+        {name: 'B7', execute: function() { store(registers.r3, memory.y) }},         // Store r3 into y
     ];
 
 
-    // ------- EXECUTE PROGRAM -------
+    // ------- DEFINE EXECUTION SEQUENCE -------
 
-    function run(program) {
+    // Program is an array of atomic actions
+    let p1 = [ A[0], A[1], A[2], A[3], A[4], A[5], B[0], B[1], B[2], B[3], B[4], B[5], B[6] ];
+    let p2 = [ A[0], A[1], A[2], B[0], B[1], B[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ];
+    let p3 = [ B[0], B[1], B[2], B[3], B[4], B[5], B[6], A[0], A[1], A[2], A[3], A[4], A[5] ];
+
+    let p4 = [ A[0], B[0], B[1], B[2], A[1], A[2], A[3], A[4], A[5], B[3], B[4], B[5], B[6] ];
+    let p5 = [ A[0], B[0], A[1], A[2], B[1], B[2], A[3], A[4], A[5], B[3], B[4], B[5], B[6] ];
+    let p6 = [ A[0], B[0], A[1], A[2], B[1], B[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ];
+    let p7 = [ A[0], B[0], B[1], B[2], A[1], A[2], B[3], B[4], B[5], B[6], A[3], A[4], A[5] ];
+
+
+    function run(actions) {
         memory.init();
-        program.forEach(runAtomic);
-        memory.print();
-
-        function runAtomic(funcArr) {
-            funcArr.forEach(action => action());
-        }
-    }
-
-    function runParallel(program) {
-        memory.init();
-        program.forEach(action => action());
+        runAtomic(actions);
+        document.write(' -----> ')
         memory.print();
     }
 
-    document.write('A1 -> A2 -> B1 -> B2 ----> ')
-    run([A1, A2, B1, B2]);
-    
-    document.write('A1 -> B1 -> A2 -> B2 ----> ')
-    run([A1, B1, A2, B2]);
+    function runAtomic(statements) {
+        statements.forEach(function(atomicAction, index) {
+            index != 0 ? document.write(`->${atomicAction.name}`) : document.write(atomicAction.name);
+            atomicAction.execute();
+        });
 
-    document.write('A1 -> B1 -> B2 -> A2 ----> ')
-    run([A1, B1, B2, A2]);
+        document.write('->')
+    }
 
-    document.write('B1 -> B2 -> A1 -> A2 ----> ')
-    run([B1, B2, A1, A2]);
-
-    document.write('B1 -> A1 -> B2 -> A2 ----> ')
-    run([B1, A1, B2, A2]);
-
-    document.write('B1 -> A1 -> A2 -> B2 ----> ')
-    run([B1, A1, A2, B2]);
-
-    document.write('A1[0], A1[1], A1[2], A2[0], A2[1], A2[2],  B1[0], B1[1], B1[2], B2[0], B2[1], B2[2], B2[3] ----> ')
-    runParallel([A1[0], A1[1], A1[2], A2[0], A2[1], A2[2],  B1[0], B1[1], B1[2], B2[0], B2[1], B2[2], B2[3]]);
-    
+    run(p1);
+    run(p2);
+    run(p3);
+    run(p4);
+    run(p5);
+    run(p6);
+    run(p7);
 
 
 })();
