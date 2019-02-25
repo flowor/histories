@@ -53,6 +53,14 @@
             case '-':
                 r2.value = r1.value - r2.value;
                 break;
+
+            case '*':
+                r2.value = r1.value * r2.value;
+                break;
+            
+            case '/':
+                r2.value = r1.value / r2.value;
+                break;
         }
     }
 
