@@ -40,6 +40,14 @@
             case '-':
                 r.value = r.value - val;
                 break;
+            
+            case '*':
+                r.value = r.value *  val;
+                break;
+            
+            case '/':
+                r.value = r.value /  val;
+                break;
         }
     }
 
